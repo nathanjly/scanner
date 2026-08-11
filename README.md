@@ -52,13 +52,40 @@ This program allows you to search for Pokémon cards on TCGPlayer, select the co
 
 ## Notes
 
-- The browser window will open during execution. You may need to click back into your terminal to enter your selection.
+- The browser runs headless (no visible window); the terminal is the only UI.
 - Search results are better if you can specify in the name "ex" or "vmax".
-- There are four toggleable options near the top of the code: LOOK_FOR_MULTIPLE_PRODUCTS, MAX_PAGES, IGNORE_JUMBO_CARDS, and INCLUDE_JAPANESE_CARDS. 
-      - LOOK_FOR_MULTIPLE_PRODUCTS --> If set to True, the program will continue searching for matching products through MAX_PAGES, unless specified, even if one is already found.
-      - MAX_PAGES --> The default max number of pages the program will search through before terminating. If product is found earlier, it will not search more pages, unless LOOK_FOR_MULTIPLE_PRODUCTS = True.
-      - IGNORE_JUMBO_CARDS --> If set to False, the program will include jumbo cards in the search.
-      - INCLUDE_JAPANESE_CARDS --> If set to False, the program will ignore japanese cards in the search.
+
+## Configuration
+
+Behavior toggles are CLI flags instead of source edits:
+
+```bash
+python scanner.py --max-pages 3 --include-jumbo --exclude-japanese --look-for-multiple
+```
+
+Run `python scanner.py --help` for the full list. Defaults: `--max-pages 5`, jumbo cards excluded, Japanese cards included, and search stops at the first matching product.
+
+## Project structure
+
+```
+scanner.py              # entry point
+tcg_scanner/
+  config.py              # CLI flag parsing
+  search_parser.py        # parses/validates the search query string
+  html_parser.py           # BeautifulSoup parsing (no browser dependency)
+  browser.py                # Selenium driver setup and page navigation
+  cli.py                     # interactive loop tying it together
+tests/                      # pytest unit tests for the pure-logic modules
+```
+
+## Testing
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
+Tests cover query parsing and HTML parsing against static fixtures — no live network or browser calls.
 
 ## Troubleshooting
 
